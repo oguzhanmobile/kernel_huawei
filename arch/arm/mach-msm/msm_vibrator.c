@@ -207,6 +207,11 @@ static void vibrator_enable(struct timed_output_dev *dev, int value)
 #endif
 /*  DTS2010080500080 luojianhong 201000817 end > */
 
+void msm_timed_vibrate(int value) {
+        vibrator_enable(0,value);
+}
+
+
 static int vibrator_get_time(struct timed_output_dev *dev)
 {
 	if (hrtimer_active(&vibe_timer)) {
