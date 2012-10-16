@@ -1285,7 +1285,7 @@ static int get_phone_version(struct tp_resolution_conversion *tp_resolution_type
     /*<DTS2011051601005 fengwei 20110516 begin*/
     if (machine_is_msm7x30_u8820()
 	  ||machine_is_msm7x30_u8800_51()
-	  ||machine_is_msm8255_u8800_pro())
+	  ||machine_is_msm8255_u8800_pro() ||machine_is_msm7x30_u8800())
     {
         tp_resolution_type->lcd_x = LCD_X_WVGA;
         tp_resolution_type->lcd_y = LCD_Y_WVGA;   
@@ -6368,6 +6368,7 @@ static void __init msm_fb_add_devices(void)
 //delete QC's bt code
 /* < DTS2012020604357 zhangyun 20120206 begin */
 #if (defined(HUAWEI_BT_BLUEZ_VER30) || (!defined(CONFIG_HUAWEI_KERNEL)))
+
 /* DTS2012020604357 zhangyun 20120206 end > */
 #if defined(CONFIG_MARIMBA_CORE) && \
    (defined(CONFIG_MSM_BT_POWER) || defined(CONFIG_MSM_BT_POWER_MODULE))
@@ -8359,7 +8360,7 @@ out:
 #ifdef CONFIG_MMC_MSM_CARD_HW_DETECTION
 static unsigned int msm7x30_sdcc_slot_status(struct device *dev)
 {
-	return (unsigned int)
+	return 1 - (unsigned int)
 		gpio_get_value_cansleep(
 			PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SD_DET - 1));
 }
@@ -8453,7 +8454,7 @@ static struct mmc_platform_data msm7x30_sdc3_data = {
 /* < DTS2011022102443 xuke 20110303 begin */
 #ifdef CONFIG_HUAWEI_KERNEL
 	/* disable sdiowakeup_irq  */
-	/*.sdiowakeup_irq = MSM_GPIO_TO_INT(118),*/
+	.sdiowakeup_irq = MSM_GPIO_TO_INT(118),
 #endif
 /* DTS2011022102443 xuke 20110303 end > */
 #endif
@@ -8551,6 +8552,8 @@ out:
 }
 #endif
 
+extern int sdcc_wifi_slot;
+
 /* < DTS2010111804286  hanshirong 20101118 begin */
 #ifdef CONFIG_HUAWEI_WIFI_SDCC
 
@@ -8596,6 +8599,7 @@ static struct msm_gpio wlan_wakes_msm_18[] = {
 /* for wifi power supply */
 #define WLAN_REG 162								/*WLAN_REG is available in U8860 / C8860 / Asura / Phoenix*/
 #define WLAN_PWR 164								/*WLAN_OWR is available in U8860 / C8860 , but we still request and use it in Ausra / Phoenix*/
+
 /* DTS2011090203253 xuke 20110902 end > */
 /* < DTS2012020402114 zhuwenying 20120206 begin */
 extern int sdcc_wifi_slot;
@@ -9086,12 +9090,12 @@ static void __init virtualkeys_init(void)
         		   "\n");
     }
     else if ( machine_is_msm7x30_u8800_51()
-		   ||machine_is_msm8255_u8800_pro())
+		   ||machine_is_msm8255_u8800_pro() || machine_is_msm7x30_u8800())
     {
         buf_vkey_size = sprintf(buf_virtualkey,
         			__stringify(EV_KEY) ":" __stringify(KEY_BACK)  ":67:850:130:80"
         		   ":" __stringify(EV_KEY) ":" __stringify(KEY_MENU)   ":192:850:112:80"
-        		   ":" __stringify(EV_KEY) ":" __stringify(KEY_HOME)   ":309:850:116:80"
+        		   ":" __stringify(EV_KEY) ":" __stringify(KEY_HOMEPAGE)   ":309:850:116:80"
         		   ":" __stringify(EV_KEY) ":" __stringify(KEY_SEARCH) ":424:850:110:80"
         		   "\n");
     }
@@ -9745,6 +9749,32 @@ static struct i2c_board_info cy8ctma300_board_info[] = {
 		.platform_data = &cy8ctma300_pdata,
 	}
 };
+void __init config_wifi_for_low_consume(void)
+{
+        
+        int rc;
+        struct  regulator *vreg_wlan2 = NULL;
+        vreg_wlan2 = regulator_get(NULL, "wlan2");
+        if (IS_ERR(vreg_wlan2)) {
+                printk(KERN_ERR "%s: vreg_get failed wlan2\n",
+                        __func__);
+                return;
+        }
+
+        // Power up 2.5v Analog
+        rc = regulator_set_voltage(vreg_wlan2, 2500*1000, 2500*1000);
+        rc = regulator_enable(vreg_wlan2);
+        
+        msleep(10);
+
+   //shut down this power after WIFI is initialised.   
+
+        rc = regulator_disable(vreg_wlan2);
+        if (rc) {
+                printk(KERN_ERR "%s: vreg_disable failed vreg_wlan2\n",
+                        __func__);
+        }
+}
 
 static void __init msm7x30_init(void)
 {
@@ -9839,8 +9869,8 @@ static void __init msm7x30_init(void)
 	msm7x30_init_mmc();
 	/* <DTS2010072202961 hufeng 20100722 begin */
 	/* removed several lines */
-	(void)lcdc_sharp_panel_device;
-	(void)msm_camera_sensor_mt9e013;
+//	(void)lcdc_sharp_panel_device;
+//	(void)msm_camera_sensor_mt9e013;
 	/* DTS2010072202961 hufeng 20100722 end> */
 	msm_qsd_spi_init();
 
@@ -9961,6 +9991,7 @@ static void __init msm7x30_init(void)
 		i2c_register_board_info(0, cy8ctma300_board_info,
 			ARRAY_SIZE(cy8ctma300_board_info));
 	}
+	config_wifi_for_low_consume();
 
 	if (machine_is_msm8x55_svlte_surf() || machine_is_msm8x55_svlte_ffa()) {
 		rc = gpio_tlmm_config(usb_hub_gpio_cfg_value, GPIO_CFG_ENABLE);

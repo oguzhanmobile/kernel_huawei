@@ -571,6 +571,7 @@ endif
 
 #/* < DTS2012020604357 zhangyun 20120206 begin */
 # Add Huawei Marco for different BT chip
+ENABLE_BLUEZ_VER30=true
 ifeq ($(ENABLE_BTLA_VER30),true)
 KBUILD_CFLAGS += -DHUAWEI_BT_BTLA_VER30
 endif

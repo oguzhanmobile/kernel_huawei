@@ -1054,7 +1054,7 @@ static int get_sensors_list(void)
 	/*add 7x30's list*/
 	int sensors_list = G_SENSOR + L_SENSOR + P_SENSOR + M_SENSOR;
 	int hasgyro = 0;
-	hasgyro = hasGyro;
+//	hasgyro = hasGyro;
 	/*< DTS2012022006500 yangbo 20120220 begin */
 	if(machine_is_msm8255_u8860()
 	|| machine_is_msm8255_u8860_92()
@@ -1479,9 +1479,10 @@ char *get_touch_info(void)
 	if (touch_info != NULL)
 		return touch_info;
 
-	touch_info = get_melfas_touch_info();
+/*	touch_info = get_melfas_touch_info();
 	if (touch_info != NULL)
 		return touch_info;
+*/
 
 	/* < DTS2012070604482 fengzhiqiang 20120712 begin */
     touch_info = get_atmel_touch_info();
