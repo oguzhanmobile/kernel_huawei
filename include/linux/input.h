@@ -834,8 +834,7 @@ struct input_keymap_entry {
 
 /* < DTS2012020902104 zhangmin 20120209 begin */
 /* modify for ES-version*/
-#define ABS_LIGHT            0x2e
-/* DTS2012020902104 zhangmin 20120209 end > */
+#define ABS_LIGHT            0x2f
 
 /*<BU5D09205 zhangtao 20100503 begin*/
 #define BTN_TOUCH2         0x102
