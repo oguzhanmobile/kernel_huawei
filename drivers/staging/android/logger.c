@@ -623,7 +623,7 @@ static int __init logger_init(void)
 	int ret;
 /* < DTS2012033007472  yuanjintao 20120331 begin */
 /* for logcat control by nv */
-#ifdef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL_STUPID_LOG_DISABLE
     u16 nv_item = LOG_CTL_INFO_ITEM;
     struct log_ctl ctl_info;
     int  rval = -1;
