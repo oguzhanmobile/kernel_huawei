@@ -240,8 +240,8 @@ struct regulator *vreg_gp4 = NULL;
 #ifdef CONFIG_HUAWEI_KERNEL
 	/*fengwei begin*/
 	#define VREG_GP13_NAME	"gp13" 
-	#define VREG_GP13_VOLTAGE_VALUE	1800000
-	#define VREG_S3_VOLTAGE_VALUE	1800000
+	#define VREG_GP13_VOLTAGE_VALUE	1800
+	#define VREG_S3_VOLTAGE_VALUE	1800
 	/*fengwei end*/
 #endif
 /*BU5D08118 zhangtao 20100419 end>*/
