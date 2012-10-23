@@ -216,7 +216,7 @@ struct regulator *vreg_gp4 = NULL;
 /* < DTS2012051500642  xiezhoukai 20120506 begin*/
 /* use pimc gpio 36 to enable the powre of SD and gpio_21 to detect */
 #ifdef CONFIG_HUAWEI_KERNEL
-#define PMIC_GPIO_SD_DET	22
+#define PMIC_GPIO_SD_DET	21
 #define PMIC_GPIO_SDC4_EN_N	35  /* PMIC GPIO Number 36 */
 #else
 #define PMIC_GPIO_SD_DET	36
@@ -453,15 +453,24 @@ static int pm8058_gpios_init(void)
 			.inv_int_pol    = 0,
 		},
 	};
+        struct pm8xxx_gpio_init_info sdcc_det1 = {
+                PM8058_GPIO_PM_TO_SYS(21),
+                {
+                        .direction      = PM_GPIO_DIR_OUT,
+                        .output_buffer  = PM_GPIO_OUT_BUF_CMOS,
+                        .output_value   = 0,
+                        .pull           = PM_GPIO_PULL_NO,
+                        .vin_sel        = 0,
+                        .out_strength   = PM_GPIO_STRENGTH_HIGH,
+                        .function       = PM_GPIO_FUNC_PAIRED,
+                        .inv_int_pol    = 0,
+                },
+        };
+
 
 	if (machine_is_msm7x30_fluid())
 		sdcc_det.config.inv_int_pol = 1;
 
-	rc = pm8xxx_gpio_config(sdcc_det.gpio, &sdcc_det.config);
-	if (rc) {
-		pr_err("%s PMIC_GPIO_SD_DET config failed\n", __func__);
-		return rc;
-	}
 #endif
 
 	if (machine_is_msm8x55_svlte_surf() || machine_is_msm8x55_svlte_ffa() ||
@@ -509,6 +518,20 @@ static int pm8058_gpios_init(void)
 			return rc;
 		}
 	}
+#ifdef CONFIG_MMC_MSM_CARD_HW_DETECTION
+
+        rc = pm8xxx_gpio_config(sdcc_det.gpio, &sdcc_det.config);
+        if (rc) {
+                pr_err("%s PMIC_GPIO_SD_DET config failed\n", __func__);
+                return rc;
+        }
+        rc = pm8xxx_gpio_config(sdcc_det1.gpio, &sdcc_det1.config);
+        if (rc) {
+                pr_err("%s PMIC_GPIO_SD_DET1 config failed\n", __func__);
+                return rc;
+        }
+#endif
+
 /* < DTS2012051500642  xiezhoukai 20120506 begin*/
 /* have config so we delet  */
 /* use pimc gpio 36 to enable the powre of SD and gpio_21 to detect */
@@ -1106,6 +1129,30 @@ static struct pmic8058_leds_platform_data pm8058_surf_leds_data = {
 	.num_leds = ARRAY_SIZE(pmic8058_surf_leds),
 	.leds	= pmic8058_surf_leds,
 };
+
+static struct pmic8058_led pm8058_u8800_leds[] = {
+        [0] = {
+                .name           = "red",
+                .max_brightness = 4,
+                .id             = PMIC8058_ID_LED_0,
+        },
+        [1] = {
+                .name           = "green",
+                .max_brightness = 4,
+                .id             = PMIC8058_ID_LED_1,
+        },
+        [2] = {
+                .name           = "blue",
+                .max_brightness = 4,
+                .id             = PMIC8058_ID_LED_2,
+        },
+};
+
+static struct pmic8058_leds_platform_data pm8058_u8800_leds_data = {
+        .num_leds = ARRAY_SIZE(pm8058_u8800_leds),
+        .leds   = pm8058_u8800_leds,
+};
+
 
 static struct pmic8058_led pmic8058_fluid_leds[] = {
 	[0] = {
@@ -9312,12 +9359,16 @@ static struct msm_tsif_platform_data tsif_platform_data = {
 
 static void __init pmic8058_leds_init(void)
 {
-	if (machine_is_msm7x30_surf())
+/*	if (machine_is_msm7x30_surf())
 		pm8058_7x30_data.leds_pdata = &pm8058_surf_leds_data;
 	else if (!machine_is_msm7x30_fluid())
 		pm8058_7x30_data.leds_pdata = &pm8058_ffa_leds_data;
 	else if (machine_is_msm7x30_fluid())
 		pm8058_7x30_data.leds_pdata = &pm8058_fluid_leds_data;
+*/
+	if (machine_is_msm7x30_u8800())
+                pm8058_7x30_data.leds_pdata = &pm8058_u8800_leds_data;
+
 }
 
 static struct msm_spm_platform_data msm_spm_data __initdata = {
