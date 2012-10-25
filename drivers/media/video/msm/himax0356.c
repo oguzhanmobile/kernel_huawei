@@ -542,7 +542,8 @@ static int himax0356_probe_init_sensor(const struct msm_camera_sensor_info *data
     if (data->vreg_enable_func)
     {
         /*< DTS2012020400396 zhangyu 20120206 begin */
-        rc = data->vreg_enable_func(1);
+        rc =0;
+        data->vreg_enable_func(1);
         /* DTS2012020400396 zhangyu 20120206 end > */
         if (rc < 0)
         {
