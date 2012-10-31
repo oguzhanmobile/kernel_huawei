@@ -1215,7 +1215,7 @@ hw_wifi_device_type get_hw_wifi_device_type(void)
 {
   /* < DTS2011122105081  niguodong 20111222 begin */
   /*< DTS2012022300887 fengwei 20120224 begin */
-  if (machine_is_msm7x27a_U8185()
+  if (machine_is_msm7x27a_U8185() || machine_is_msm7x30_u8800()
 	|| machine_is_msm7x27a_U8661() 
 	|| machine_is_msm7x27a_C8668D())
   /* DTS2012022300887 fengwei 20120224 end >*/

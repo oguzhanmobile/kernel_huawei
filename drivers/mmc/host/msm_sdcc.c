@@ -4828,7 +4828,7 @@ msmsdcc_runtime_suspend(struct device *dev)
 	pr_debug("%s: %s: start\n", mmc_hostname(mmc), __func__);
 	if (mmc) {
 /*< DTS2012041800928 yuanmingming 20120418 begin */
-#ifdef CONFIG_HUAWEI_WIFI_SDCC
+#ifdef NO_CONFIG_HUAWEI_WIFI_SDCC
 	    if ((host->pdev_id==SDCC_WIFI_SLOT) && WIFI_QUALCOMM==get_hw_wifi_device_type())
 	    {
 		    host->sdcc_suspending = 0;
