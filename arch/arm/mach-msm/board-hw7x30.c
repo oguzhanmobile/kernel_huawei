@@ -357,6 +357,24 @@ struct pm8xxx_gpio_init_info {
 	struct pm_gpio			config;
 };
 
+#define MSM_RAM_CONSOLE_SIZE 256*1024
+
+static struct resource ram_console_resources[] = {
+        {
+                .start  = 0,
+                .end    = 0,
+                .flags  = IORESOURCE_MEM,
+        },
+};
+
+static struct platform_device ram_console_device = {
+        .name           = "ram_console",
+        .id             = -1,
+        .num_resources  = ARRAY_SIZE(ram_console_resources),
+        .resource       = ram_console_resources,
+};
+
+
 static int pm8058_gpios_init(void)
 {
 	int rc;
@@ -7431,6 +7449,7 @@ static struct platform_device *devices[] __initdata = {
 	&smc91x_device,
 	&smsc911x_device,
 	&msm_device_nand,
+	&ram_console_device,
 #ifdef CONFIG_USB_MSM_OTG_72K
 	&msm_device_otg,
 #ifdef CONFIG_USB_GADGET
@@ -10205,6 +10224,14 @@ static void __init msm7x30_allocate_memory_regions(void)
 	msm_fb_resources[0].end = msm_fb_resources[0].start + size - 1;
 	pr_info("allocating %lu bytes at %p (%lx physical) for fb\n",
 		size, addr, __pa(addr));
+
+        size = MSM_RAM_CONSOLE_SIZE;
+        addr = alloc_bootmem(size);
+        ram_console_resources[0].start=(int)addr; //__pa(addr);
+        ram_console_resources[0].end =ram_console_resources[0].start + size - 1;
+        pr_info("allocating %lu bytes at %p (%lx physical) for ram_console\n",
+                size, addr, __pa(addr));
+
 }
 
 static void __init msm7x30_map_io(void)

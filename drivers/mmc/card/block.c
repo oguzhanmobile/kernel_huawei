@@ -1460,7 +1460,7 @@ static int mmc_blk_probe(struct mmc_card *card)
 
 /*< DTS2012011904543 lijianzhao 20120119 begin */
 /* <DTS2010080901139 hufeng 20100821 begin */
-#if 0
+#if 1
     if (!strcmp(md->disk->disk_name, "mmcblk0"))
         mmc_panic_save_card(card);
 #endif
